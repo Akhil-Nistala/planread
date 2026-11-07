@@ -1,0 +1,58 @@
+# Synthetic data generation. Text sources are combined with the material vocabulary in vocab.yaml.
+seed: 1234
+
+fonts:
+  # First existing files are used. Colab/Linux: `apt-get install fonts-noto-cjk` adds Noto Sans/Serif CJK.
+  ja:
+    - /usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc
+    - /usr/share/fonts/opentype/noto/NotoSerifCJK-Regular.ttc
+    - /usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc
+    - C:/Windows/Fonts/YuGothR.ttc
+    - C:/Windows/Fonts/YuGothM.ttc
+    - C:/Windows/Fonts/YuGothB.ttc
+    - C:/Windows/Fonts/YuGothL.ttc
+    - C:/Windows/Fonts/msgothic.ttc
+  latin:                     # used only for pure-ASCII strings
+    - /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf
+    - C:/Windows/Fonts/arial.ttf
+    - C:/Windows/Fonts/times.ttf
+    - C:/Windows/Fonts/calibri.ttf
+    - C:/Windows/Fonts/consola.ttf
+    - C:/Windows/Fonts/verdana.ttf
+
+text_mix:                    # sampling weights of text sources
+  material: 0.30
+  room: 0.08
+  product: 0.12
+  manufacturer: 0.08
+  dimension: 0.17
+  note_fragment: 0.10
+  random_charset: 0.15       # random runs from the full charset so rare kanji are seen
+
+pseudo_words:                # building blocks for product-/manufacturer-like strings (no real brands)
+  kata_syllables: [ア, イ, ウ, エ, オ, カ, キ, ク, ケ, コ, サ, シ, ス, セ, ソ, タ, チ, テ, ト, ナ, ニ, ネ, ノ, ハ, ヒ, フ, ヘ, ホ, マ, ミ, ム, メ, モ, ラ, リ, ル, レ, ロ, ワ, ン, ー, ボ, ド, グ, ジ, ゼ, パ, ピ, プ, ペ, ポ]
+  company_suffix: [工業, 建材, 化学, 産業, 製作所, 株式会社, ㈱, ボード, 興業]
+  product_series: [ST, AR, GB, NC, FR, TX, KS, MX, EZ, HD]
+  latin_company: [Corp., Co., Ltd., Industries, Materials, Kogyo]
+
+augment:
+  p_cross_line: 0.55         # dimension / leader / grid line crossing the text
+  p_hatch: 0.15
+  p_cell_border: 0.35        # partial table border around the text
+  p_blur: 0.35
+  p_noise: 0.5
+  p_jpeg: 0.5
+  p_lowres: 0.3              # downscale+upscale (small fonts in scans)
+  p_fade: 0.3
+  max_rotation_deg: 2.5
+  p_perspective: 0.2
+
+sizes:
+  rec_train: 40000
+  rec_val: 2000
+  rec_test: 2000             # per split: test_clean and test_hard
+  orient_train: 12000
+  orient_test: 1500
+  det_train: 2000
+  det_test: 200
+  docs: 12

@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+data/
+data_smoke/
+models/
+outputs/
+logs_*.txt
+*.onnx
+*.pt

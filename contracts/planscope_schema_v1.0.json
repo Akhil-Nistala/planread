@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.org/planscope/drawing-layout.schema.json",
+  "title": "PlanScope output: drawing layout & table analysis",
+  "description": "Per-document output consumed by PlanRead (OCR) and the downstream asbestos-material matcher. All coordinates are pixels of the rendered page image (origin top-left, x right, y down) at the page's `dpi`.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "document", "pages"],
+  "properties": {
+    "schema_version": { "type": "string", "const": "1.0" },
+    "document": { "type": "string", "minLength": 1 },
+    "pages": { "type": "array", "items": { "$ref": "#/$defs/page" } }
+  },
+  "$defs": {
+    "text_source": { "type": "string", "enum": ["vector", "needs_ocr"] },
+    "bbox": {
+      "description": "Axis-aligned box [x0, y0, x1, y1] in pixels, x0<=x1, y0<=y1.",
+      "type": "array", "items": { "type": "number" }, "minItems": 4, "maxItems": 4
+    },
+    "point": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2 },
+    "polygon": {
+      "description": "Oriented box as 4 corner points, clockwise starting from the top-left corner of the box in its own orientation.",
+      "type": "array", "items": { "$ref": "#/$defs/point" }, "minItems": 4, "maxItems": 4
+    },
+    "routing": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["n_words", "n_chars", "valid_char_ratio", "text_coverage", "reasons"],
+      "properties": {
+        "n_words": { "type": "integer", "minimum": 0 },
+        "n_chars": { "type": "integer", "minimum": 0 },
+        "valid_char_ratio": { "type": "number", "minimum": 0, "maximum": 1 },
+        "text_coverage": { "type": "number", "minimum": 0, "maximum": 1 },
+        "reasons": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "word": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["text", "bbox"],
+      "properties": {
+        "text": { "type": "string" },
+        "bbox": { "$ref": "#/$defs/bbox" },
+        "block": { "type": "integer" },
+        "line": { "type": "integer" }
+      }
+    },
+    "cell": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["text", "bbox", "text_source"],
+      "properties": {
+        "text": { "type": ["string", "null"], "description": "null when text_source is needs_ocr" },
+        "bbox": { "$ref": "#/$defs/bbox" },
+        "text_source": { "$ref": "#/$defs/text_source" },
+        "row_span": { "type": "integer", "minimum": 1, "default": 1 },
+        "col_span": { "type": "integer", "minimum": 1, "default": 1 },
+        "is_header": { "type": "boolean", "default": false }
+      }
+    },
+    "table": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["headers", "canonical_headers", "rows"],
+      "properties": {
+        "headers": { "type": "array", "items": { "type": ["string", "null"] } },
+        "canonical_headers": {
+          "description": "Header mapped to a canonical field (room, floor, baseboard, wall, ceiling, ...) or null if unknown. Same length as headers.",
+          "type": "array", "items": { "type": ["string", "null"] }
+        },
+        "rows": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["cells"],
+            "properties": { "cells": { "type": "array", "items": { "$ref": "#/$defs/cell" } } }
+          }
+        }
+      }
+    },
+    "region": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "class", "conf", "polygon", "text", "text_source", "table"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^r[0-9]+$" },
+        "class": { "type": "string", "enum": ["title_block", "schedule_table", "legend", "notes_block", "text_callout"] },
+        "conf": { "type": "number", "minimum": 0, "maximum": 1 },
+        "polygon": { "$ref": "#/$defs/polygon" },
+        "text": { "type": ["string", "null"], "description": "Concatenated region text (vector pages) or null (needs_ocr)." },
+        "text_source": { "$ref": "#/$defs/text_source" },
+        "table": { "oneOf": [{ "$ref": "#/$defs/table" }, { "type": "null" }] }
+      }
+    },
+    "page": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["page", "route", "dpi", "width", "height", "needs_ocr", "routing", "words", "regions"],
+      "properties": {
+        "page": { "type": "integer", "minimum": 1 },
+        "route": { "type": "string", "enum": ["vector", "raster"] },
+        "dpi": { "type": ["integer", "null"], "description": "Render DPI; null for image inputs without DPI metadata." },
+        "width": { "type": "integer", "minimum": 1 },
+        "height": { "type": "integer", "minimum": 1 },
+        "needs_ocr": { "type": "boolean", "description": "True iff route == raster." },
+        "routing": { "oneOf": [{ "$ref": "#/$defs/routing" }, { "type": "null" }] },
+        "words": {
+          "description": "Full-page text-layer words (vector pages only; empty for raster pages).",
+          "type": "array", "items": { "$ref": "#/$defs/word" }
+        },
+        "regions": { "type": "array", "items": { "$ref": "#/$defs/region" } },
+        "timings": {
+          "description": "Optional per-stage wall-clock seconds (diagnostics only; consumers must not rely on it).",
+          "type": "object", "additionalProperties": { "type": "number", "minimum": 0 }
+        }
+      }
+    }
+  }
+}

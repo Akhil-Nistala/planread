@@ -1,0 +1,29 @@
+# OCR pipeline configuration (inference). Paths are relative to the repo root.
+seed: 42
+
+crops:
+  pad_px: 4                 # padding added around each polygon before rectification
+  min_side_px: 6            # skip degenerate crops
+
+orientation:
+  model: models/orientation.pt     # tiny CNN trained by `python -m src.orientation train`
+  input_size: 128
+  low_conf: 0.80                   # below this, top-2 orientations are re-scored by the recognizer
+  vertical:
+    min_aspect: 1.6                # h/w above this makes a crop a 縦書き (vertical) candidate
+    handling: split                # split -> re-flow glyphs horizontally | flag -> mark unsupported
+
+detection:
+  engine: ppocr_db                 # DBNet (PP-OCR det, ONNX via RapidOCR)
+  single_line_max_aspect: 0.45     # crops with h/w below this (or table cells) skip detection: one line
+  line_merge_y_overlap: 0.5        # boxes overlapping this much vertically are in the same line
+
+recognition:
+  engine: ppocr_v6                 # ppocr_v6 (pretrained, default) | ppocr_japan_v4 | crnn (trained in this repo)
+  beam_width: 10
+  top_k: 5
+  crnn_model: models/crnn.pt
+  calibrator: models/calibrator_{engine}.json   # fitted by `python -m eval.calibrate`
+
+charset:
+  file: charset/charset.txt

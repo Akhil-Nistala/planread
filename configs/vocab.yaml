@@ -1,0 +1,38 @@
+# Material / header vocabulary shared by the sample maker (Milestone 1) and the
+# synthetic generator (Milestone 2). Extend freely -- nothing else is hard-coded.
+
+headers:
+  ja: { room: 室名, floor: 床, baseboard: 幅木, wall: 壁, ceiling: 天井, remarks: 備考 }
+  en: { room: Room, floor: Floor, baseboard: Baseboard, wall: Wall, ceiling: Ceiling, remarks: Remarks }
+
+rooms:
+  ja: [事務室, 会議室, 廊下, 便所, 湯沸室, 倉庫, 機械室, 更衣室, 受付, 階段室, 電気室, 応接室]
+  en: [Office, Meeting Room, Corridor, WC, Pantry, Storage, Plant Room, Locker Room, Reception, Stair, Electrical Room, Lounge]
+
+materials:
+  floor:
+    ja: [ビニル床タイル, ビニル床シート, 長尺塩ビシート, タイルカーペット, モルタル金ゴテ, 磁器質タイル, フリーアクセスフロア]
+    en: [vinyl floor tile, vinyl sheet flooring, carpet tile, trowelled mortar, porcelain tile, raised access floor]
+  baseboard:
+    ja: [ビニル幅木 H60, ビニル幅木 H100, 木製幅木, モルタル幅木, ステンレス幅木]
+    en: [vinyl base H60, vinyl base H100, timber skirting, mortar base, stainless skirting]
+  wall:
+    ja: [石膏ボード t12.5 EP塗装, ケイ酸カルシウム板 t8, 押出成形セメント板, コンクリート打放し, スレート波板, ビニルクロス貼]
+    en: [gypsum board 12.5mm painted, calcium silicate board 8mm, fibre cement board, exposed concrete, corrugated slate sheet, vinyl wallcovering]
+  ceiling:
+    ja: [岩綿吸音板 t12, 石膏ボード t9.5 EP, ケイ酸カルシウム板 t6, 化粧石膏ボード, 吹付けロックウール, 直天井]
+    en: [rock wool acoustic board 12mm, gypsum board 9.5mm painted, calcium silicate board 6mm, decorative gypsum board, sprayed rock wool, exposed soffit]
+
+notes:
+  ja:
+    - 既存天井材（岩綿吸音板）は撤去前に石綿含有の有無を調査すること。
+    - 壁下地はLGS 65形とし、石膏ボード t12.5 二重貼りとする。
+    - 床仕上げ材の撤去時は下地調整材の含有調査を行うこと。
+    - 機械室の吹付け材は事前分析の結果に従い処理すること。
+    - 図中の寸法はすべて mm 表示とする。
+  en:
+    - Survey existing ceiling tiles (rock wool acoustic board) for asbestos before removal.
+    - "Partition: LGS 65 studs with two layers of 12.5mm gypsum board."
+    - Test floor levelling compound under vinyl tiles prior to removal.
+    - Sprayed coatings in plant room to be handled per pre-demolition analysis.
+    - All dimensions in millimetres.
